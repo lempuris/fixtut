@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: onyxs-fix-demo
+  
+  # Jackson configuration for JSON serialization
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      indent-output: true
+    deserialization:
+      fail-on-unknown-properties: false
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# FIX Engine Configuration
+fix:
+  engine:
+    license-file: onyx-license.xml  # You'll need to obtain this from Onyx
+    fix-version: FIX.4.4
+    data-directory: ./fix-data
+    validate-messages: true
+    heartbeat-interval: 30
+    thread-pool-size: 10
+    max-message-size: 10240
+    enable-logging: true
+    
+    # Acceptor Configuration (Exchange Simulator)
+    acceptor:
+      enabled: true
+      port: 9876
+      sender-comp-id: EXCHANGE
+      target-comp-id: CLIENT
+      store-path: ./fix-store/acceptor
+      log-path: ./fix-logs/acceptor
+      reset-on-logon: false
+      reset-on-disconnect: false
+    
+    # Initiator Configuration (Client)
+    initiator:
+      enabled: true
+      host: localhost
+      port: 9876
+      sender-comp-id: CLIENT
+      target-comp-id: EXCHANGE
+      store-path: ./fix-store/initiator
+      log-path: ./fix-logs/initiator
+      reconnect-interval: 5
+      reset-on-logon: false
+      reset-on-disconnect: false
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.fxhub.onyxs: DEBUG
+    biz.onixs: INFO
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/onyxs-fix-demo.log
+    max-size: 10MB
+    max-history: 10
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
